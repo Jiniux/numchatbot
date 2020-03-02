@@ -37,6 +37,7 @@ configure_database() {
 if [ -z $1 ] || [ -z $2 ]
 then
     echo "Error: no argument supplied."
+    echo "Usage: ./configures.sh <bot_token> <database_path>"
 else
     configure_node $1 $2
     configure_database $1 $2
