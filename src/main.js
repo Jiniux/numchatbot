@@ -6,7 +6,7 @@ const Telegraf = require('telegraf')
 
 var warnedChats = [];
 
-const bot = new Telegraf(config.token);
+const bot = new Telegraf(config['token']);
 
 var semaphore = new Mutex();
 

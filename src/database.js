@@ -1,5 +1,6 @@
+const config = require('./config.json')
 const sqlite = require('sqlite3')
-const database = new sqlite.Database('numchat.db');
+const database = new sqlite.Database(config['database_path']);
 
 const getGroupMemberQuery =
     `select * from group_members 
