@@ -1,0 +1,16 @@
+{
+  "name": "numchat",
+  "version": "1.0.0",
+  "description": "",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Jiniux",
+  "license": "MIT",
+  "dependencies": {
+    "async-mutex": "^0.1.4",
+    "sqlite3": "^4.1.1",
+    "telegraf": "^3.36.0"
+  }
+}
