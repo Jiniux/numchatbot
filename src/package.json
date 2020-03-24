@@ -9,7 +9,6 @@
   "author": "Jiniux",
   "license": "MIT",
   "dependencies": {
-    "async-mutex": "^0.1.4",
     "sqlite3": "^4.1.1",
     "telegraf": "^3.36.0"
   }

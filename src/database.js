@@ -7,7 +7,6 @@ const getGroupMemberQuery =
     where tg_id = ? 
     and tg_group_id = ?;`;
 
-
 function getGroupMember(userId, groupId) {
     return new Promise((rs, rj) => {
         database.get(
@@ -107,6 +106,7 @@ const updateGroupMemberQuery =
 
 function updateGroupMember(userId, groupId, username, time) {
     const now = new Date(time)
+    
     const dayStart = new Date(
         now.getFullYear(), now.getMonth(), now.getDate() + 1,
         0, 0, 0,
@@ -116,11 +116,11 @@ function updateGroupMember(userId, groupId, username, time) {
         getGroupMember(userId, groupId)
             .then(member => {
                 if (!member) {
-                    addGroupMember(userId, groupId, username)
+                    addGroupMember(userId, groupId, username, time)
                         .then(rs).catch(rj)
                 }
                 else {
-                    if (time > (member['day_end'])) {
+                    if (+now > (member['day_end'])) {
                         member['message_count_today'] = 1
                         member['day_end'] = +dayStart;
                     }
@@ -141,6 +141,7 @@ function updateGroupMember(userId, groupId, username, time) {
             .catch(rj)
     })
 }
+
 module.exports = {
     updateGroupMember, getGroupMember, updateGroupMembersUsername,
     getTopTenDayGroup, getTopTenGroup
