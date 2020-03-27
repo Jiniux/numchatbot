@@ -49,16 +49,18 @@ function addGroupMember(userId, groupId, username, time) {
 const getTopTenDayGroupQuery =
     `select * from group_members 
     where tg_group_id = ? 
-    and ? < day_end 
+    and ? < day_end and ? > (day_end - 86400000)
     order by message_count_today desc
     limit 10;`;
 
 function getTopTenDayGroup(groupId) {
+    var date = +new Date();
+
     return new Promise((rs, rj) => {
         database.all(
             getTopTenDayGroupQuery,
             [
-                groupId, +new Date()
+                groupId, date, date
             ],
             (err, rows) => err ? rj(err) : rs(rows)
         )
@@ -67,11 +69,13 @@ function getTopTenDayGroup(groupId) {
 
 const getTopTenGroupQuery =
     `select * from group_members 
-    where tg_group_id = ? 
+    where tg_group_id = ?
     order by message_count_total desc
     limit 10;`;
 
 function getTopTenGroup(groupId) {
+    var date = +new Date();
+
     return new Promise((rs, rj) => {
         database.all(
             getTopTenGroupQuery,

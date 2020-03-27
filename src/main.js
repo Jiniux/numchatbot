@@ -70,7 +70,7 @@ onClassify = (ctx) => new Promise(async (rs, rj) => {
         .then(async users => {
             var message = "<i>Classifica</i>\n\n";
             users.forEach((user, i) => {
-                message += `${i + 1}. <b>${user['tg_username'].replace(/\s+$/, '')}</b>: ${user['message_count_today']}\n`
+                message += `${i + 1}. <b>${user['tg_username'].replace(/\s+$/, '')}</b>: ${user['message_count_total']}\n`
             });
 
             await ctx.replyWithHTML(message); rs();
