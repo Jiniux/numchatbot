@@ -1,5 +1,9 @@
 const config = require('./config.json')
 const database = require('./database')
+const fun = require('./fun')
+
+const fs = require('fs');
+const fetch = require('node-fetch')
 
 const Telegraf = require('telegraf')
 
@@ -20,13 +24,13 @@ execNextOp = async () => {
                 queue.push([ctx, fn]);
             });
     }
-    else 
+    else
         queueStatus = false;
 }
 
 enqueue = (ctx, fn) => {
     queue.push([ctx, fn]);
-    
+
     if (!queueStatus)
         queueStatus = true;
     else
@@ -36,14 +40,13 @@ enqueue = (ctx, fn) => {
 }
 
 onMessage = (ctx) => new Promise(async (rs, rj) => {
-    console.log("Message time: " + ctx.message.date)
 
     if (ctx.from.is_bot) {
         rs();
         return;
     }
 
-    if (!(ctx.chat.type == 'group' || ctx.chat.type == 'supergroup')) {
+    /*if (!(ctx.chat.type == 'group' || ctx.chat.type == 'supergroup')) {
         if (!warnedChats.includes(ctx.chat.id)) {
             await ctx.reply('È possibile usare questo bot solo in un gruppo o in un supergruppo.')
 
@@ -52,14 +55,14 @@ onMessage = (ctx) => new Promise(async (rs, rj) => {
 
         rs();
         return;
-    }
+    }*/
 
     database.updateGroupMember(ctx.from.id, ctx.chat.id, ctx.from.username, ctx.message.date * 1000)
         .then(() => {
             database.updateGroupMembersUsername(ctx.from.id, ctx.from.username)
                 .then(rs)
-                .catch(err => { 
-                    console.log(err); rs(); 
+                .catch(err => {
+                    console.log(err); rs();
                 })
         })
         .catch(rj)
@@ -89,11 +92,59 @@ onDailyClassify = (ctx) => new Promise(async (rs, rj) => {
         }).catch(rj);
 })
 
+getPicture = (ctx) => new Promise((rs, rj) => {
+    if (ctx.message.photo) {
+        var fileId = ctx.message.photo.pop()['file_id'];
+
+        ctx.telegram.getFileLink(fileId).then(url => {
+            return fetch(url)
+                .then(result => result.buffer())
+                .then(rs)
+                .catch(rj)
+        })
+    } else
+        rs(null);
+});
+
+const funCommands = [
+    { cmd: '/memino', exec: fun.fry }
+]
+
 bot.on('message', async (ctx, next) => {
-    if (ctx.message.text)
-    {
-        if (['/','.'].includes(ctx.message.text.charAt(0)))
-        {
+    console.log("Message time: " + ctx.message.date)
+
+    if (ctx.message.caption) {
+        var command = ctx.message.caption.split(' ')[0], index;
+        if ((index = funCommands.findIndex(x => x.cmd == command)) != -1) {
+            getPicture(ctx)
+                .then(result => {
+                    if (result == null) {
+                        ctx.reply("You need to specify a photo to process.");
+                        return;
+                    }
+
+                    var params = ctx.message.caption.split(' ');
+                    params.shift();
+
+                    funCommands[index]
+                        .exec(result, params)
+                        .then(img => {
+                            ctx.replyWithPhoto({ source: img })
+                        })
+                        .catch(err => {
+                            console.log(err)
+                            ctx.reply("Could not process the picture. The error has been logged.")
+                        })
+                })
+                .catch(err => {
+                    console.log(err)
+                    ctx.reply("Could not download the picture. The error has been logged.");
+                })
+        }
+    }
+
+    if (ctx.message.text) {
+        if (['/', '.'].includes(ctx.message.text.charAt(0))) {
             next();
             return;
         }
