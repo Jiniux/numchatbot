@@ -6,4 +6,9 @@ In order to work, you need to configure it first with the shell script in the ro
 $ ./configure.sh <bot_token> <database_path>
 ```
 
+Afterwards, run it:
+```
+$ ./run.sh
+```
+
 And that's all folks.

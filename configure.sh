@@ -28,6 +28,8 @@ configure_database() {
             );\`)
         }
 
+        process.chdir('../');
+
         const sqlite = require('sqlite3');
         const database = new sqlite.Database(\"$2\", createTable) 
     " 

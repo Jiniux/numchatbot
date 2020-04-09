@@ -46,7 +46,7 @@ onMessage = (ctx) => new Promise(async (rs, rj) => {
         return;
     }
 
-    /*if (!(ctx.chat.type == 'group' || ctx.chat.type == 'supergroup')) {
+    if (!(ctx.chat.type == 'group' || ctx.chat.type == 'supergroup')) {
         if (!warnedChats.includes(ctx.chat.id)) {
             await ctx.reply('È possibile usare questo bot solo in un gruppo o in un supergruppo.')
 
@@ -55,7 +55,7 @@ onMessage = (ctx) => new Promise(async (rs, rj) => {
 
         rs();
         return;
-    }*/
+    }
 
     database.updateGroupMember(ctx.from.id, ctx.chat.id, ctx.from.username, ctx.message.date * 1000)
         .then(() => {
@@ -75,7 +75,7 @@ onClassify = (ctx) => new Promise(async (rs, rj) => {
             users.forEach((user, i) => {
                 message += `${i + 1}. <b>${user['tg_username'].replace(/\s+$/, '')}</b>: ${user['message_count_total']}\n`
             });
-
+            
             await ctx.replyWithHTML(message); rs();
         }).catch(rj)
 })
